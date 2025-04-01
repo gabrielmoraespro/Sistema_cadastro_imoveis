@@ -137,9 +137,6 @@ yarn start  # Ou npm start
 ✅ Consulta e edição de registros 🔍  
 ✅ Sistema seguro e eficiente 🔐
 
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Sinta-se livre para contribuir!
 
 ---
 💡 *Desenvolvido por Gabriel Moraes*
