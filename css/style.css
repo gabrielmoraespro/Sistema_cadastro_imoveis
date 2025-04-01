@@ -1,0 +1,232 @@
+/* 1. Reset de Estilos e Box Model */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 2. Estilo do Corpo da Página */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/7/7e/A%C3%A9rea_do_Centro_da_cidade_em_Agosto_de_2012..jpg') no-repeat center bottom fixed;
+    background-size: cover;
+    color: white;
+    text-align: center;
+}
+
+/* 3. Estilo do Cabeçalho */
+header {
+    background: rgba(0, 0, 0, 0.814);
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    padding-left: 20px; /* Adiciona um pequeno espaço à esquerda, se necessário */
+    margin-bottom: 20px;
+    position: relative;
+    top: 0; /* Coloca o título no topo */
+    left: 0; /* Coloca o título na extremidade esquerda */
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 4. Estilo do Menu de Navegação */
+nav ul {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+}
+
+nav ul li {
+    margin-right: 10px;
+    padding-right: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* 5. Estilo do Conteúdo Principal */
+main {
+    padding: 40px 0;
+}
+
+main .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+/* 6. Estilo da Tabela */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table thead {
+    background-color: #004d40;
+    color: white;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.table th {
+    font-weight: 600;
+}
+
+.table tr:nth-child(even) {
+    background-color: #4e8edb;
+}
+
+/* 7. Estilo do Rodapé */
+footer {
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    font-size: 14px;
+}
+
+/* 8. Estilo do Botão de Cadastro */
+.botao-cadastro {
+    position: absolute;  /* Posiciona o botão de forma absoluta dentro do header */
+    top: 20px;           /* Distância do topo */
+    left: 20px;          /* Distância da esquerda */
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(45deg, #e67e22, #e67e22);
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.botao-cadastro:hover {
+    background-color: #e67e22;
+}
+
+/* 9. Estilo do Botão de Login */
+.btn-login {
+    position: absolute;  /* Posiciona o botão de forma absoluta dentro do header */
+    top: 20px;           /* Distância do topo */
+    right: 20px;         /* Distância da direita */
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-login:hover {
+    background: linear-gradient(45deg, #0056b3, #0094cc);
+    transform: scale(1.05);
+}
+
+/* 10. Estilo para os Botões Lado a Lado */
+.container-botoes {
+    text-align: center; /* Centraliza os botões */
+    margin-top: 20px;    /* Espaço superior para os botões */
+}
+
+.container-botoes a {
+    margin: 0 15px; /* Espaço entre os botões */
+}
+
+/* 11. Estilo de Seções */
+section {
+    margin: 50px auto;
+    max-width: 800px;
+    background: rgba(36, 35, 35, 0.814);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 12. Ajustes Gerais para Layout */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 13. Estilo do Menu do Usuário */
+.user-menu {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.user-menu:hover .user-dropdown {
+    display: block;
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 5px 10px;
+    color: black;
+    text-decoration: none;
+}
+
+.user-dropdown a:hover {
+    background: #ddd;
+}
