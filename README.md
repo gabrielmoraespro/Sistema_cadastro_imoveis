@@ -10,6 +10,18 @@ Essa é a imagem do sistema em funcionamento, mostrando o processo de cadastro e
 
 ## Mais Imagens
 
+![Cadastro de Imóvel](info-criacao.PNG)
+
+Essa é a tela para mostrar as aplicações usadas no sistema.
+
+![Cadastro de Imóvel](redefinirsenha.PNG)
+
+Essa é a tela para redefinir a senha do sistema.
+
+![Cadastro de Imóvel](bancodedados.PNG)
+
+Essa é a tela que armazena os bancos de dados do sistema.
+
 ![Cadastro de Imóvel](cadastroimovel.PNG)
 
 Essa é a tela para cadastro de um imóvel no sistema.
