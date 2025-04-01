@@ -1,3 +1,47 @@
+# Sistema de Imóveis
+
+Aqui está a descrição do meu sistema de cadastro de imóveis, com diversas funcionalidades para cadastrar, consultar e editar imóveis e usuários.
+
+## Imagem do Sistema
+
+![Gif do Sistema](Gif-Sistema-de-Imoveis-min (1).gif)
+
+Essa é a imagem do sistema em funcionamento, mostrando o processo de cadastro e visualização de imóveis.
+
+## Mais Imagens
+
+![Cadastro de Imóvel](cadastroimovel.PNG)
+
+Essa é a tela para cadastro de um imóvel no sistema.
+
+![Cadastro de Pessoa](cadastropessoa.PNG)
+
+Aqui temos a tela de cadastro de uma pessoa no sistema.
+
+![Cadastro de Usuário](cadastrousuario.PNG)
+
+Esta é a tela para cadastrar um usuário no sistema.
+
+![Consulta de Imóveis](consultaimoveis.PNG)
+
+Tela de consulta de imóveis cadastrados no sistema.
+
+![Consulta de Pessoas Cadastradas](consultarpessoascadastradas.PNG)
+
+Esta é a tela de consulta das pessoas cadastradas no sistema.
+
+![Imagem do Sistema](Imagem-1.PNG)
+
+Imagem adicional do sistema mostrando detalhes importantes de navegação e funcionalidades.
+
+![Informações de Criação](info-criacao.PNG)
+
+Esta imagem fornece detalhes sobre o processo de criação do sistema.
+
+
+
+
+
 # 📌 Sistema de Cadastro de Imóveis
 
 Este é um sistema para cadastro e gerenciamento de imóveis, desenvolvido com PHP, MySQL e Node.js.
