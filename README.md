@@ -4,7 +4,7 @@ Aqui está a descrição do meu sistema de cadastro de imóveis, com diversas fu
 
 ## Imagem do Sistema
 
-![Gif do Sistema](Gif-Sistema-de-Imoveis-min (1).gif)
+![Gif do Sistema](gifsistemaimoveis.gif)
 
 Essa é a imagem do sistema em funcionamento, mostrando o processo de cadastro e visualização de imóveis.
 
