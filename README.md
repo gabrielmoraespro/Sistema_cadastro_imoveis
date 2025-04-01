@@ -4,6 +4,12 @@ Aqui está a descrição do meu sistema de cadastro de imóveis, com diversas fu
 
 ## Imagem do Sistema
 
+
+![Gif do Sistema](interfaceinicial.gif)
+
+Essa é a imagem da interface usando um pouco de bootstrap e react.
+
+
 ![Gif do Sistema](gifsistemaimoveis.gif)
 
 Essa é a imagem do sistema em funcionamento, mostrando o processo de cadastro e visualização de imóveis.
