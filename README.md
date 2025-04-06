@@ -4,6 +4,14 @@ Aqui está a descrição do meu sistema de cadastro de imóveis, com diversas fu
 
 ## Imagem do Sistema
 
+![Gif do Sistema](sucesso-cadastro.png)
+
+O cadastro é armazenado em uma table do banco de dados principal.
+
+
+![Gif do Sistema](login-sucesso.png)
+
+O login também é reconhecido e armazenado com segurança. Todas senhas criptografadas
 
 ![Gif do Sistema](interfaceinicial.gif)
 
