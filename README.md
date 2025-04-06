@@ -4,6 +4,14 @@ Aqui está a descrição do meu sistema de cadastro de imóveis, com diversas fu
 
 ## Imagem do Sistema
 
+![Banco de Dados](cadastro-pessoas.png)
+
+Cadastro de pessoas funcional, com armazenamento em banco de dados.
+
+![Banco de Dados](cadastro-imoveis.png)
+
+Cadastro de imoveis funcional, com armazenamento em banco de dados.
+
 ![Banco de Dados](estrutura-banco-dados.png)
 
 Banco de dados unificado e organizado
