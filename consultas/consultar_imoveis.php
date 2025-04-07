@@ -1,8 +1,12 @@
-<!-- filepath: d:\xampp\htdocs\cadastro_imoveis\consultas\consultar_imoveis.php -->
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// filepath: /Applications/XAMPP/xamppfiles/htdocs/cadastro_imoveis/consultas/consultar_imoveis.php
+
 // Conexão com o banco de dados
 $host = 'localhost';
-$dbname = 'seu_banco_de_dados';
+$dbname = 'cadastro_imoveis_data';
 $username = 'root';
 $password = '';
 
@@ -17,17 +21,16 @@ try {
 // Consultar imóveis
 $query = "
     SELECT 
-        im.inscricao_municipal,
-        im.logradouro,
-        im.numero,
-        im.bairro,
-        im.complemento,
-        p.nome AS nome_proprietario,
-        p.cpf AS cpf_proprietario
+        id,
+        proprietario,
+        endereco,
+        cidade,
+        estado,
+        tipo,
+        valor,
+        criado_em
     FROM 
-        imoveis im
-    JOIN 
-        pessoas p ON im.contribuinte_id = p.id
+        imoveis
 ";
 
 try {
@@ -83,7 +86,7 @@ try {
         }
 
         .table th {
-            background: #5a189a;
+            background:rgb(12, 5, 19);
             color: #fff;
             text-align: center;
         }
@@ -128,36 +131,38 @@ try {
 
 <div class="container">
     <a href="javascript:history.back()" class="btn-back">&larr; Voltar</a>
-    <h1>Consulta de Imóveis</h1>
+    <h1>Lista de Imóveis</h1>
 
     <table class="table table-hover text-center">
         <thead>
             <tr>
-                <th>Inscrição Municipal</th>
-                <th>Logradouro</th>
-                <th>Número</th>
-                <th>Bairro</th>
-                <th>Complemento</th>
+                <th>ID</th>
                 <th>Proprietário</th>
-                <th>CPF do Proprietário</th>
+                <th>Endereço</th>
+                <th>Cidade</th>
+                <th>Estado</th>
+                <th>Tipo</th>
+                <th>Valor (R$)</th>
+                <th>Criado em</th>
             </tr>
         </thead>
         <tbody>
-            <?php if (count($imoveis) > 0): ?>
+            <?php if (!empty($imoveis)): ?>
                 <?php foreach ($imoveis as $imovel): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($imovel['inscricao_municipal'], ENT_QUOTES, 'UTF-8'); ?></td>
-                        <td><?php echo htmlspecialchars($imovel['logradouro'], ENT_QUOTES, 'UTF-8'); ?></td>
-                        <td><?php echo htmlspecialchars($imovel['numero'], ENT_QUOTES, 'UTF-8'); ?></td>
-                        <td><?php echo htmlspecialchars($imovel['bairro'], ENT_QUOTES, 'UTF-8'); ?></td>
-                        <td><?php echo $imovel['complemento'] ? htmlspecialchars($imovel['complemento'], ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
-                        <td><?php echo htmlspecialchars($imovel['nome_proprietario'], ENT_QUOTES, 'UTF-8'); ?></td>
-                        <td><?php echo htmlspecialchars($imovel['cpf_proprietario'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?= htmlspecialchars($imovel['id'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($imovel['proprietario'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($imovel['endereco'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($imovel['cidade'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($imovel['estado'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($imovel['tipo'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= number_format($imovel['valor'], 2, ',', '.') ?></td>
+                        <td><?= htmlspecialchars($imovel['criado_em'], ENT_QUOTES, 'UTF-8') ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="7">Nenhum imóvel encontrado.</td>
+                    <td colspan="8">Nenhum imóvel encontrado.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

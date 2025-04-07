@@ -1,7 +1,7 @@
 <?php
 // Conexão com o banco de dados
 $host = 'localhost';
-$dbname = 'seu_banco_de_dados';
+$dbname = 'cadastro_imoveis_data';
 $username = 'root';
 $password = '';
 
@@ -15,16 +15,16 @@ try {
 
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $proprietario = $_POST['proprietario'];
-    $endereco = $_POST['endereco'];
-    $cidade = $_POST['cidade'];
-    $estado = $_POST['estado'];
-    $tipo = $_POST['tipo'];
-    $valor = $_POST['valor'];
+    $proprietario = htmlspecialchars(trim($_POST['proprietario']));
+    $endereco = htmlspecialchars(trim($_POST['endereco']));
+    $cidade = htmlspecialchars(trim($_POST['cidade']));
+    $estado = htmlspecialchars(trim($_POST['estado']));
+    $tipo = htmlspecialchars(trim($_POST['tipo']));
+    $valor = floatval($_POST['valor']);
 
     // Validação simples
-    if (!is_numeric($valor) || $valor <= 0) {
-        echo "Valor inválido. Por favor, insira um valor positivo.";
+    if (empty($proprietario) || empty($endereco) || empty($cidade) || empty($estado) || empty($tipo) || $valor <= 0) {
+        echo "Por favor, preencha todos os campos corretamente.";
         exit;
     }
 
@@ -34,20 +34,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     try {
         $stmt = $pdo->prepare($sql);
-        if ($stmt->execute([
-            ':proprietario' => $proprietario,
-            ':endereco' => $endereco,
-            ':cidade' => $cidade,
-            ':estado' => $estado,
-            ':tipo' => $tipo,
-            ':valor' => $valor
-        ])) {
-            echo "Imóvel cadastrado com sucesso!";
-        } else {
-            echo "Erro ao cadastrar imóvel!";
-        }
+        $stmt->bindValue(':proprietario', $proprietario);
+        $stmt->bindValue(':endereco', $endereco);
+        $stmt->bindValue(':cidade', $cidade);
+        $stmt->bindValue(':estado', $estado);
+        $stmt->bindValue(':tipo', $tipo);
+        $stmt->bindValue(':valor', $valor);
+        $stmt->execute();
+
+        echo "Imóvel cadastrado com sucesso!";
     } catch (PDOException $e) {
-        echo 'Erro ao inserir dados: ' . $e->getMessage();
+        echo "Erro ao cadastrar imóvel: " . $e->getMessage();
     }
 }
 ?>
@@ -107,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <h2>Cadastro de Imóvel</h2>
     
-    <form action="cadastro_de_imovel.php" method="POST">
+    <form action="cadastro_imovel.php" method="POST">
         <label for="proprietario">Proprietário:</label>
         <input type="text" id="proprietario" name="proprietario" required>
 
@@ -122,14 +119,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <label for="tipo">Tipo:</label>
         <select id="tipo" name="tipo" required>
-            <option value="Casa">Casa</option>
-            <option value="Apartamento">Apartamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Comercial">Comercial</option>
+            <option value="residencial">Residencial</option>
+            <option value="comercial">Comercial</option>
         </select>
 
         <label for="valor">Valor (R$):</label>
-        <input type="text" id="valor" name="valor" required>
+        <input type="number" id="valor" name="valor" step="0.01" required>
 
         <button type="submit">Cadastrar</button>
     </form>

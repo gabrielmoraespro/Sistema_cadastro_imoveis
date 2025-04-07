@@ -1,3 +1,17 @@
+<?php
+session_start();
+
+// Exibir mensagens de erro ou sucesso, se houver
+$mensagem = "";
+if (isset($_SESSION['error'])) {
+    $mensagem = "<p class='error-message'>" . htmlspecialchars($_SESSION['error']) . "</p>";
+    unset($_SESSION['error']);
+} elseif (isset($_SESSION['success'])) {
+    $mensagem = "<p class='success-message'>" . htmlspecialchars($_SESSION['success']) . "</p>";
+    unset($_SESSION['success']);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -5,6 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sistema de Cadastro de Imóveis da Prefeitura de São Leopoldo. Cadastre pessoas e imóveis para gestão de IPTU.">
     <meta name="keywords" content="Cadastro, Imóveis, IPTU, Prefeitura, São Leopoldo">
+    <meta name="author" content="Prefeitura Municipal de São Leopoldo">
     <title>Cadastro de Imóveis - Prefeitura de São Leopoldo</title>
     <link rel="stylesheet" href="css/style.css"> <!-- Arquivo de estilos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -148,6 +163,32 @@
         .tabela-moderna tbody tr:hover td .content {
             animation: revealText 0.5s forwards;
         }
+
+        /* Estilo Moderno para os Botões do Menu (Menores) */
+        .menu-btn {
+            display: inline-block;
+            padding: 8px 16px; /* Reduz o tamanho do botão */
+            font-size: 14px; /* Reduz o tamanho da fonte */
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px; /* Bordas mais suaves */
+            background: linear-gradient(135deg, #2980b9, #6dd5fa);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); /* Sombra mais leve */
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        .menu-btn:hover {
+            background: linear-gradient(135deg, #6dd5fa, #2980b9);
+            transform: scale(1.05);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3); /* Sombra mais intensa no hover */
+        }
+
+        .menu-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Sombra reduzida ao clicar */
+        }
     </style>
 </head>
 <body>
@@ -157,17 +198,20 @@
         <h1>Bem-vindo ao Sistema de Cadastro de Imóveis</h1>
         <nav role="navigation">
             <ul>
-                <li><a href="cadastros/cadastro_pessoa.php">Cadastro de Pessoa</a></li>
-                <li><a href="cadastros/cadastro_imovel.php">Cadastro de Imóvel</a></li>
-                <li><a href="consultas/consultar_pessoas.php">Consultar Pessoas</a></li>
-                <li><a href="consultas/consultar_imoveis.php">Consultar Imóveis</a></li>
-                <li><a href="login.php" class="btn-login">Acessar Sistema</a></li>
+                <li><a href="cadastros/cadastro_pessoa.php" class="menu-btn">Cadastro de Pessoa</a></li>
+                <li><a href="cadastros/cadastro_imovel.php" class="menu-btn">Cadastro de Imóvel</a></li>
+                <li><a href="consultas/consultar_pessoas.php" class="menu-btn">Consultar Pessoas</a></li>
+                <li><a href="consultas/consultar_imoveis.php" class="menu-btn">Consultar Imóveis</a></li>
+                <li><a href="login.php" class="btn-login">Fazer Login</a></li>
                 <li><a href="cadastro.php" class="botao-cadastro">Cadastrar-se</a></li>
             </ul>
         </nav>
     </header>
 
     <main role="main">
+        <!-- Exibir mensagens de erro ou sucesso -->
+        <?= $mensagem ?>
+
         <section>
             <h2>Objetivo do Sistema</h2>
             

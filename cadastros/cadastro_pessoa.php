@@ -1,86 +1,66 @@
 <?php
-// Conexão com o banco de dados
 $host = 'localhost';
-$dbname = 'seu_banco_de_dados';
+$dbname = 'cadastro_imoveis_data';
 $username = 'root';
 $password = '';
 
 try {
-    // Criando a conexão com PDO
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    // Exibindo erro de conexão
     echo 'Erro de conexão: ' . $e->getMessage();
     exit;
 }
 
 // Função para validar CPF
 function validaCPF($cpf) {
-    // Remove caracteres não numéricos
     $cpf = preg_replace('/\D/', '', $cpf);
-
-    if (strlen($cpf) != 11) return false;
-
-    // Verifica se todos os números são iguais
-    if (preg_match('/(\d)\1{10}/', $cpf)) return false;
-
-    // Valida CPF utilizando o algoritmo
+    if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) return false;
     for ($t = 9; $t < 11; $t++) {
-        for ($d = 0, $c = 0; $c < $t; $c++) {
-            $d += $cpf[$c] * (($t + 1) - ($c + 1)); // Correção aqui
-        }
+        $d = 0;
+        for ($c = 0; $c < $t; $c++) $d += $cpf[$c] * (($t + 1) - $c);
         $d = ((10 * $d) % 11) % 10;
-        if ($cpf[$c] != $d) return false; // Correção aqui
+        if ($cpf[$t] != $d) return false;
     }
-
     return true;
 }
 
-// Verifica se o formulário foi enviado
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Obtém os dados do formulário
-    $nome = $_POST['nome'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome = htmlspecialchars(trim($_POST['nome']));
     $data_nascimento = $_POST['data_nascimento'];
-    $cpf = $_POST['cpf'];
+    $cpf = htmlspecialchars(trim($_POST['cpf']));
     $sexo = $_POST['sexo'];
-    $telefone = $_POST['telefone'] ?? null;  // opcional
-    $email = $_POST['email'] ?? null;        // opcional
+    $telefone = htmlspecialchars(trim($_POST['telefone']));
+    $email = htmlspecialchars(trim($_POST['email']));
+    $endereco = htmlspecialchars(trim($_POST['endereco']));
+    $cidade = htmlspecialchars(trim($_POST['cidade']));
+    $estado = htmlspecialchars(trim($_POST['estado']));
+    $cep = htmlspecialchars(trim($_POST['cep']));
 
-    // Valida CPF
     if (!validaCPF($cpf)) {
         echo "CPF inválido. Por favor, verifique o CPF informado.";
         exit;
     }
 
-    // Valida e-mail
-    if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "E-mail inválido. Por favor, insira um e-mail válido.";
-        exit;
-    }
-
-    // Prepara o comando SQL para inserir os dados
-    $sql = "INSERT INTO pessoas (nome, data_nascimento, cpf, sexo, telefone, email) 
-            VALUES (:nome, :data_nascimento, :cpf, :sexo, :telefone, :email)";
-    
     try {
+        $sql = "INSERT INTO pessoas (nome, data_nascimento, cpf, sexo, telefone, email, endereco, cidade, estado, cep) 
+                VALUES (:nome, :data_nascimento, :cpf, :sexo, :telefone, :email, :endereco, :cidade, :estado, :cep)";
         $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':nome', $nome);
+        $stmt->bindValue(':data_nascimento', $data_nascimento);
+        $stmt->bindValue(':cpf', $cpf);
+        $stmt->bindValue(':sexo', $sexo);
+        $stmt->bindValue(':telefone', $telefone);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':endereco', $endereco);
+        $stmt->bindValue(':cidade', $cidade);
+        $stmt->bindValue(':estado', $estado);
+        $stmt->bindValue(':cep', $cep);
+        $stmt->execute();
 
-        // Executa a inserção no banco de dados
-        if ($stmt->execute([
-            ':nome' => $nome,
-            ':data_nascimento' => $data_nascimento,
-            ':cpf' => $cpf,
-            ':sexo' => $sexo,
-            ':telefone' => $telefone,
-            ':email' => $email
-        ])) {
-            echo "Pessoa cadastrada com sucesso!";
-        } else {
-            echo "Erro ao cadastrar pessoa!";
-        }
+        echo "Cadastro realizado com sucesso!";
     } catch (PDOException $e) {
-        echo 'Erro ao inserir dados: ' . $e->getMessage();
+        echo "Erro ao cadastrar pessoa: " . $e->getMessage();
     }
 }
 ?>
@@ -90,106 +70,90 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Pessoa</title>
+    <title>Cadastrar Pessoa</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
             background: linear-gradient(to right, #2c3e50, #3498db);
             color: #fff;
-        }
-
-        h2 {
             text-align: center;
-            font-size: 2.5em;
-            margin-top: 50px;
-            color: #ecf0f1;
         }
-
         form {
             background-color: rgba(255, 255, 255, 0.9);
             max-width: 600px;
-            margin: 0 auto;
+            margin: 20px auto;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         label {
             font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
             color: #333;
+            display: block;
+            margin-top: 10px;
         }
-
-        input[type="text"], input[type="date"], input[type="email"], select {
+        input, select {
             width: 100%;
             padding: 12px;
-            margin: 8px 0;
+            margin-top: 5px;
             border: 2px solid #3498db;
             border-radius: 8px;
             background-color: #f8f9fa;
             box-sizing: border-box;
-            transition: all 0.3s ease;
         }
-
-        input[type="text"]:focus, input[type="date"]:focus, input[type="email"]:focus, select:focus {
-            border-color: #2980b9;
-            background-color: #eaf1f7;
-        }
-
         button {
             background-color: #2980b9;
             color: white;
             font-size: 1.2em;
-            padding: 15px 30px;
+            padding: 15px;
             width: 100%;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            margin-top: 15px;
         }
-
         button:hover {
             background-color: #1c5980;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
-
-    <h2>Cadastro de Pessoa</h2>
-    
-    <form action="cadastrar_pessoa.php" method="POST">
+    <h2>Cadastrar Pessoa</h2>
+    <form method="POST" action="cadastro_pessoa.php">
         <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required><br>
+        <input type="text" id="nome" name="nome" required>
 
         <label for="data_nascimento">Data de Nascimento:</label>
-        <input type="date" id="data_nascimento" name="data_nascimento" required><br>
+        <input type="date" id="data_nascimento" name="data_nascimento" required>
 
         <label for="cpf">CPF:</label>
-        <input type="text" id="cpf" name="cpf" required><br>
+        <input type="text" id="cpf" name="cpf" required>
 
         <label for="sexo">Sexo:</label>
         <select id="sexo" name="sexo" required>
             <option value="masculino">Masculino</option>
             <option value="feminino">Feminino</option>
-        </select><br>
+        </select>
 
-        <label for="telefone">Telefone (opcional):</label>
-        <input type="text" id="telefone" name="telefone"><br>
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone">
 
-        <label for="email">E-mail (opcional):</label>
-        <input type="email" id="email" name="email"><br>
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" name="email">
+
+        <label for="endereco">Endereço:</label>
+        <input type="text" id="endereco" name="endereco" required>
+
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade" name="cidade" required>
+
+        <label for="estado">Estado:</label>
+        <input type="text" id="estado" name="estado" required>
+
+        <label for="cep">CEP:</label>
+        <input type="text" id="cep" name="cep" required>
 
         <button type="submit">Cadastrar</button>
     </form>
-
 </body>
 </html>

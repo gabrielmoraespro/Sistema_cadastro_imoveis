@@ -6,40 +6,49 @@ $sucesso = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['email'])) {
-        $email = trim($_POST['email']);
-        $sql = "SELECT * FROM usuarios WHERE email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
 
-        if ($result->num_rows > 0) {
-            $token = bin2hex(random_bytes(50));
-            $expira_em = date("Y-m-d H:i:s", strtotime("+1 hour"));
-            $usuario = $result->fetch_assoc();
-            $sql_update = "UPDATE usuarios SET token = ?, token_expira_em = ? WHERE email = ?";
-            $stmt_update = $conn->prepare($sql_update);
-            $stmt_update->bind_param("sss", $token, $expira_em, $email);
-            $stmt_update->execute();
-
-            $link_reset = "http://127.0.0.1/cadastro_imoveis/resetar_senha.php?token=$token";
-            $assunto = "Redefinição de Senha";
-            $mensagem = "Clique no link abaixo para redefinir sua senha:\n$link_reset";
-            $headers = "From: no-reply@seusite.com";
-
-            if (mail($email, $assunto, $mensagem, $headers)) {
-                $sucesso = "Instruções para redefinir a senha foram enviadas para o seu e-mail.";
-            } else {
-                $erro = "Erro ao enviar o e-mail de redefinição. Tente novamente.";
-            }
+        if (!$email) {
+            $erro = "E-mail inválido.";
         } else {
-            $erro = "Este e-mail não está cadastrado.";
+            try {
+                // Verifica se o e-mail existe no banco de dados
+                $sql = "SELECT * FROM usuarios WHERE email = :email";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindValue(':email', $email);
+                $stmt->execute();
+
+                if ($stmt->rowCount() > 0) {
+                    // Gera o token e define o tempo de expiração
+                    $token = bin2hex(random_bytes(50));
+                    $expira_em = date("Y-m-d H:i:s", strtotime("+1 hour"));
+
+                    // Atualiza o token no banco de dados
+                    $sql_update = "UPDATE usuarios SET token = :token, token_expira_em = :expira_em WHERE email = :email";
+                    $stmt_update = $conn->prepare($sql_update);
+                    $stmt_update->bindValue(':token', $token);
+                    $stmt_update->bindValue(':expira_em', $expira_em);
+                    $stmt_update->bindValue(':email', $email);
+                    $stmt_update->execute();
+
+                    // Envia o e-mail com o link de redefinição
+                    $link = "http://localhost/cadastro_imoveis/nova_senha.php?token=" . $token;
+                    $mensagem = "Clique no link para redefinir sua senha: " . $link;
+
+                    // Substitua por uma função de envio de e-mail real
+                    mail($email, "Redefinição de Senha", $mensagem);
+
+                    $sucesso = "Um link para redefinir sua senha foi enviado para o seu e-mail.";
+                } else {
+                    $erro = "E-mail não encontrado.";
+                }
+            } catch (PDOException $e) {
+                $erro = "Erro ao processar a solicitação: " . $e->getMessage();
+            }
         }
-        $stmt->close();
     } else {
-        $erro = "Por favor, insira seu e-mail.";
+        $erro = "Por favor, insira um e-mail.";
     }
-    $conn->close();
 }
 ?>
 

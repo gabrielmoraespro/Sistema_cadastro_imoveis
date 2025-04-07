@@ -1,6 +1,22 @@
 <?php
-    // Incluir arquivo de conexão com o banco de dados, se necessário
-    require_once('conexao.php');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Incluir arquivo de conexão com o banco de dados
+require_once('conexao.php');
+
+session_start();
+
+if (isset($_SESSION['error'])) {
+    echo "<p class='error-message'>" . htmlspecialchars($_SESSION['error']) . "</p>";
+    unset($_SESSION['error']);
+}
+
+if (isset($_SESSION['success'])) {
+    echo "<p class='success-message'>" . htmlspecialchars($_SESSION['success']) . "</p>";
+    unset($_SESSION['success']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -107,6 +123,55 @@
             text-align: center;
             color: white;
         }
+
+        /* Social Login Buttons */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .google-btn, .facebook-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .google-btn {
+            background:rgb(55, 53, 53);
+            color: white;
+            box-shadow: 0 0 8px rgba(239, 239, 239, 0.5);
+        }
+
+        .google-btn:hover {
+            background: #c23321;
+            box-shadow: 0 0 15px rgba(219, 68, 55, 0.7);
+        }
+
+        .facebook-btn {
+            background: #4267B2;
+            color: white;
+            box-shadow: 0 0 8px rgba(66, 103, 178, 0.5);
+        }
+
+        .facebook-btn:hover {
+            background: #365899;
+            box-shadow: 0 0 15px rgba(66, 103, 178, 0.7);
+        }
+
+        .google-btn img, .facebook-btn img {
+            width: 24px; /* Ajuste o tamanho conforme necessário */
+            height: 24px;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -129,6 +194,14 @@
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
             </form>
+            <div class="social-login mt-3">
+                <button class="google-btn w-100 mb-2">
+                    <img src="images/google-logo.png" alt="Google Logo"> Continuar com Google
+                </button>
+                <button class="facebook-btn w-100">
+                    <img src="images/facebook-logo.png" alt="Facebook Logo"> Continuar com Facebook
+                </button>
+            </div>
             <p class="mt-3 text-center">Já tem uma conta? <a href="login.php" style="color: #00c3ff; text-decoration: none;">Faça login aqui</a></p>
         </div>
     </div>
