@@ -5,38 +5,58 @@ require_once('conexao.php');
 $erro = "";
 $sucesso = "";
 
+// Verifica se o token foi fornecido
 if (isset($_GET['token'])) {
-    $token = $_GET['token'];
+    $token = htmlspecialchars(trim($_GET['token'])); // Sanitiza o token
 
     // Verificar se o token existe e não expirou
-    $sql = "SELECT * FROM usuarios WHERE token = ? AND token_expira_em > NOW()";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $token);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    if ($conn) {
+        $sql = "SELECT * FROM usuarios WHERE token = ? AND token_expira_em > NOW()";
+        $stmt = $conn->prepare($sql);
 
-    if ($result->num_rows > 0) {
-        // Se o token for válido, permite o reset da senha
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if (!empty($_POST['senha'])) {
-                $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+        if ($stmt) {
+            $stmt->bind_param("s", $token);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-                // Atualizar a senha no banco
-                $sql_update = "UPDATE usuarios SET senha = ?, token = NULL, token_expira_em = NULL WHERE token = ?";
-                $stmt_update = $conn->prepare($sql_update);
-                $stmt_update->bind_param("ss", $senha, $token);
-                $stmt_update->execute();
+            if ($result->num_rows > 0) {
+                // Se o token for válido, permite o reset da senha
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    if (!empty($_POST['senha'])) {
+                        $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 
-                $sucesso = "Sua senha foi redefinida com sucesso!";
+                        // Atualizar a senha no banco
+                        $sql_update = "UPDATE usuarios SET senha = ?, token = NULL, token_expira_em = NULL WHERE token = ?";
+                        $stmt_update = $conn->prepare($sql_update);
+
+                        if ($stmt_update) {
+                            $stmt_update->bind_param("ss", $senha, $token);
+                            $stmt_update->execute();
+
+                            if ($stmt_update->affected_rows > 0) {
+                                $sucesso = "Sua senha foi redefinida com sucesso!";
+                            } else {
+                                $erro = "Erro ao redefinir a senha. Tente novamente.";
+                            }
+                        } else {
+                            $erro = "Erro ao preparar a consulta de atualização.";
+                        }
+                    } else {
+                        $erro = "Por favor, insira uma nova senha.";
+                    }
+                }
             } else {
-                $erro = "Por favor, insira uma nova senha.";
+                $erro = "Token inválido ou expirado.";
             }
+
+            $stmt->close();
+        } else {
+            $erro = "Erro ao preparar a consulta.";
         }
     } else {
-        $erro = "Token inválido ou expirado.";
+        $erro = "Erro ao conectar ao banco de dados.";
     }
 
-    $stmt->close();
     $conn->close();
 } else {
     $erro = "Token não fornecido.";
@@ -63,7 +83,7 @@ if (isset($_GET['token'])) {
     <?php if (!empty($sucesso)): ?>
         <p class="success-message"><?= htmlspecialchars($sucesso) ?></p>
     <?php else: ?>
-        <form action="resetar_senha.php?token=<?= $token ?>" method="POST">
+        <form action="resetar_senha.php?token=<?= urlencode($token) ?>" method="POST">
             <div class="input-group">
                 <input type="password" name="senha" placeholder="Nova senha" required>
             </div>

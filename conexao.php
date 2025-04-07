@@ -1,15 +1,20 @@
 <?php
-// Defina os parâmetros de conexão com o banco de dados
-$servidor = "localhost";  // Normalmente 'localhost' se for local
-$usuario = "root";        // O nome de usuário do banco (geralmente 'root' para localhost)
-$senha = "";              // Senha do banco de dados (deixe vazio se for 'root' no localhost)
-$banco = "armazenar_cadastro"; // Nome do banco de dados que você criou
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// Criando a conexão
-$conn = new mysqli($servidor, $usuario, $senha, $banco);
+// Configurações do banco de dados
+$host = 'localhost';
+$dbname = 'cadastro_imoveis_data';
+$username = 'root';
+$password = '';
 
-// Verificando a conexão
-if ($conn->connect_error) {
-    die("Erro na conexão: " . $conn->connect_error);
+try {
+    // Criando a conexão com PDO
+    $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    // Exibindo erro de conexão
+    die('Erro na conexão com o banco de dados: ' . $e->getMessage());
 }
 ?>

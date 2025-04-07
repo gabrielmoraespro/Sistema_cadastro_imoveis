@@ -1,7 +1,7 @@
 <?php
 // Configuração do Banco de Dados
 $host = 'localhost';
-$dbname = 'seu_banco_de_dados';
+$dbname = 'cadastro_imoveis_data';
 $username = 'root';
 $password = '';
 
@@ -9,16 +9,18 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die('<p style="color:red;">Erro de conexão com o banco de dados.</p>');
+    echo 'Erro de conexão: ' . $e->getMessage();
+    exit;
 }
 
 // Consulta os dados das pessoas
 try {
-    $sql = "SELECT id, nome, data_nascimento, cpf, sexo, telefone, email FROM pessoas ORDER BY nome ASC";
+    $sql = "SELECT id, nome, data_nascimento, cpf, sexo, telefone, email, endereco, cidade, estado, cep, criado_em FROM pessoas ORDER BY nome ASC";
     $stmt = $pdo->query($sql);
     $pessoas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die('<p style="color:red;">Erro ao buscar os dados das pessoas.</p>');
+    echo 'Erro na consulta: ' . $e->getMessage();
+    exit;
 }
 ?>
 
@@ -34,8 +36,8 @@ try {
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: #fff;
+            background: linear-gradient(135deg,rgb(0, 0, 0) 0%, #2575fc 100%);
+            color: black;
             min-height: 100vh;
         }
 
@@ -115,6 +117,11 @@ try {
                     <th>Sexo</th>
                     <th>Telefone</th>
                     <th>E-mail</th>
+                    <th>Endereço</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>CEP</th>
+                    <th>Criado em</th>
                 </tr>
             </thead>
             <tbody>
@@ -127,6 +134,11 @@ try {
                         <td><?= htmlspecialchars($pessoa['sexo']); ?></td>
                         <td><?= htmlspecialchars($pessoa['telefone']); ?></td>
                         <td><?= htmlspecialchars($pessoa['email']); ?></td>
+                        <td><?= htmlspecialchars($pessoa['endereco']); ?></td>
+                        <td><?= htmlspecialchars($pessoa['cidade']); ?></td>
+                        <td><?= htmlspecialchars($pessoa['estado']); ?></td>
+                        <td><?= htmlspecialchars($pessoa['cep']); ?></td>
+                        <td><?= htmlspecialchars($pessoa['criado_em']); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

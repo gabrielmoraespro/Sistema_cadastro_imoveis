@@ -1,59 +1,68 @@
 <?php
-require_once('conexao.php'); // Certifique-se de que a conexão está correta
+require_once('conexao.php'); // Certifique-se de que o arquivo de conexão está correto
+
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = trim($_POST['nome']);
-    $email = trim($_POST['email']);
+    // Sanitização e validação dos dados de entrada
+    $nome = htmlspecialchars(trim($_POST['nome']));
+    $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
     $senha = trim($_POST['senha']);
     $confirmar_senha = trim($_POST['confirmar_senha']);
 
     // Validações básicas
     if (empty($nome) || empty($email) || empty($senha) || empty($confirmar_senha)) {
-        echo "Todos os campos são obrigatórios!";
-        exit;
+        $_SESSION['error'] = "Todos os campos são obrigatórios!";
+        header("Location: cadastro.php");
+        exit();
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "E-mail inválido!";
-        exit;
+    if (!$email) {
+        $_SESSION['error'] = "E-mail inválido!";
+        header("Location: cadastro.php");
+        exit();
     }
 
     if ($senha !== $confirmar_senha) {
-        echo "As senhas não coincidem!";
-        exit;
+        $_SESSION['error'] = "As senhas não coincidem!";
+        header("Location: cadastro.php");
+        exit();
     }
 
-    // Verificar se o e-mail já existe no banco
-    $sql_check = "SELECT id FROM usuarios WHERE email = ?";
-    $stmt_check = $conn->prepare($sql_check);
-    $stmt_check->bind_param("s", $email);
-    $stmt_check->execute();
-    $stmt_check->store_result();
+    try {
+        // Verifica se o e-mail já existe no banco de dados
+        $sql_check = "SELECT id FROM usuarios WHERE email = :email";
+        $stmt_check = $conn->prepare($sql_check);
+        $stmt_check->bindValue(':email', $email);
+        $stmt_check->execute();
 
-    if ($stmt_check->num_rows > 0) {
-        echo "Este e-mail já está cadastrado. Tente outro!";
-        $stmt_check->close();
-        exit;
+        if ($stmt_check->rowCount() > 0) {
+            $_SESSION['error'] = "E-mail já cadastrado!";
+            header("Location: cadastro.php");
+            exit();
+        }
+
+        // Hash da senha para segurança
+        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
+        // Insere o novo usuário no banco de dados
+        $sql_insert = "INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bindValue(':nome', $nome);
+        $stmt_insert->bindValue(':email', $email);
+        $stmt_insert->bindValue(':senha', $senha_hash);
+        $stmt_insert->execute();
+
+        $_SESSION['success'] = "Cadastro realizado com sucesso!";
+        header("Location: cadastro.php");
+        exit();
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Erro ao processar o cadastro: " . $e->getMessage();
+        header("Location: cadastro.php");
+        exit();
     }
-    $stmt_check->close();
-
-    // Hash da senha antes de armazenar
-    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-
-    // Inserir no banco de dados
-    $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $nome, $email, $senha_hash);
-
-    if ($stmt->execute()) {
-        echo "Cadastro realizado com sucesso!";
-        header("Location: ../app/login.php"); // Redireciona para o login após o cadastro
-        exit;
-    } else {
-        echo "Erro ao cadastrar: " . $conn->error;
-    }
-
-    $stmt->close();
-    $conn->close();
+} else {
+    header("Location: cadastro.php");
+    exit();
 }
 ?>

@@ -1,43 +1,51 @@
-<!-- filepath: d:\xampp\htdocs\cadastro_imoveis\login.php -->
 <?php
+// filepath: /Applications/XAMPP/xamppfiles/htdocs/cadastro_imoveis/login.php
 session_start();
-require_once('conexao.php');
-
-$error = ""; 
+$error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['email']) && !empty($_POST['senha'])) {
         $email = htmlspecialchars(trim($_POST['email']));
         $senha = $_POST['senha'];
 
-        $sql = "SELECT * FROM usuarios WHERE email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        try {
+            // Conexão com o banco de dados
+            $host = 'localhost';
+            $dbname = 'cadastro_imoveis_data';
+            $username = 'root';
+            $password = '';
+            $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        if ($result->num_rows > 0) {
-            $usuario = $result->fetch_assoc();
-            
-            if (password_verify($senha, $usuario['senha'])) {
-                $_SESSION['usuario_id'] = $usuario['id'];
-                $_SESSION['usuario_nome'] = $usuario['nome'];
+            // Consulta para buscar o usuário pelo e-mail
+            $sql = "SELECT * FROM usuarios WHERE email = :email";
+            $stmt = $conn->prepare($sql);
+            $stmt->bindValue(':email', $email);
+            $stmt->execute();
 
-                header("Location: cadastro_imoveis/index.php");
-                exit();
+            if ($stmt->rowCount() > 0) {
+                $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                // Verifica a senha
+                if (password_verify($senha, $usuario['senha'])) {
+                    $_SESSION['usuario_id'] = $usuario['id'];
+                    $_SESSION['usuario_nome'] = $usuario['nome'];
+
+                    // Redireciona para o index.php
+                    header("Location: ../cadastro_imoveis/index.php");
+                    exit();
+                } else {
+                    $error = "Senha incorreta!";
+                }
             } else {
-                $error = "Senha incorreta!";
+                $error = "Usuário não encontrado!";
             }
-        } else {
-            $error = "Usuário não encontrado!";
+        } catch (PDOException $e) {
+            $error = "Erro ao processar o login: " . $e->getMessage();
         }
-
-        $stmt->close();
     } else {
         $error = "Preencha todos os campos!";
     }
-
-    $conn->close();
 }
 ?>
 
@@ -46,175 +54,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema de Cadastro</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <title>Login</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #2c3e50, #3498db);
             color: #fff;
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            width: 350px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
+            margin: 0;
+            padding: 0;
         }
-
-        .login-container h2 {
-            margin-bottom: 1rem;
-            font-weight: 600;
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 1.5rem;
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
         }
-
-        .input-group input {
+        input {
             width: 100%;
-            padding: 12px 15px 12px 40px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            transition: 0.3s;
-        }
-
-        .input-group input:focus {
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 8px #007BFF;
-        }
-
-        .input-group i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #ccc;
-        }
-
-        .error-message {
-            color: #ff4d4d;
-            font-size: 14px;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .login-btn {
-            background: #007BFF;
-            color: white;
-            border: none;
             padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2980b9;
+            color: white;
+            font-size: 1.2em;
+            padding: 10px;
             width: 100%;
-            font-size: 16px;
+            border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 0 8px #007BFF;
+            margin-top: 15px;
         }
-
-        .login-btn:hover {
-            background: #0056b3;
-            box-shadow: 0 0 15px #007BFF;
+        button:hover {
+            background-color: #1c5980;
         }
-
-        .login-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .extra-links {
-            margin-top: 1rem;
-        }
-
-        .extra-links a {
+        .link {
+            display: block;
+            margin-top: 15px;
+            color: #3498db;
             text-decoration: none;
-            color: #00c3ff;
-            font-size: 14px;
         }
-
-        .extra-links a:hover {
+        .link:hover {
             text-decoration: underline;
         }
-
-        .fade-in {
-            animation: fade 1s ease-in-out;
-        }
-
-        @keyframes fade {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .back-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .back-button:hover {
-            color: #ccc;
+        .error {
+            color: red;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-
-<div class="login-container fade-in">
-    <button class="back-button" onclick="window.history.back();">&larr;</button>
-    <h2>Bem-vindo</h2>
-    <p>Faça login para acessar sua conta</p>
-
-    <form action="" method="POST">
-        <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" name="email" placeholder="Email" required>
-        </div>
-
-        <div class="input-group">
-            <i class="fas fa-lock"></i>
+    <div class="container">
+        <h2>Login</h2>
+        <form method="POST" action="login.php">
+            <input type="email" name="email" placeholder="E-mail" required>
             <input type="password" name="senha" placeholder="Senha" required>
-        </div>
-
+            <button type="submit">Entrar</button>
+            <a href="esqueci_senha.php" class="link">Esqueceu a senha?</a>
+        </form>
         <?php if (!empty($error)): ?>
-            <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
+            <p class="error"><?= htmlspecialchars($error) ?></p>
         <?php endif; ?>
-
-        <button type="submit" class="login-btn">Entrar</button>
-    </form>
-
-    <div class="extra-links">
-       <a href="esqueci_senha.php">Esqueci minha senha</a>
     </div>
-</div>
-
 </body>
 </html>
